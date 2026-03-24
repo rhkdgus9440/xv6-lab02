@@ -688,3 +688,55 @@ procdump(void)
     printf("\n");
   }
 }
+
+int
+ps(int pid)
+{
+  struct proc *p;
+  int found = 0;
+  char *state;
+
+  printf("pid,state,name\n");
+
+  for(p = proc; p < &proc[NPROC]; p++){
+    if(pid == 0){
+      if(p->state == UNUSED)
+        continue;
+    } else {
+      if(p->pid != pid)
+        continue;
+    }
+
+    found = 1;
+
+    switch(p->state){
+    case UNUSED:
+      state = "unused";
+      break;
+    case USED:
+      state = "used";
+      break;
+    case SLEEPING:
+      state = "sleep";
+      break;
+    case RUNNABLE:
+      state = "runble";
+      break;
+    case RUNNING:
+      state = "run";
+      break;
+    case ZOMBIE:
+      state = "zombie";
+      break;
+    default:
+      state = "unknown";
+      break;
+    }
+
+    printf("%d,%s,%s\n", p->pid, state, p->name);
+  }
+
+  if(pid != 0 && found == 0)
+    return 1;
+  return 0;
+}
